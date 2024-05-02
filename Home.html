@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="Home.css">
+</head>
+<body>
+<div id="url">
+    <div id="short">
+        <div id="url1">
+            <h1>URL Shortener</h1>
+            <label for="longUrl">Enter a long URL</label> <br>
+            <input type="text" id="longUrl"> <br>
+            <button onclick="shortenURL()">Shorten URL</button>
+            <p>Shortened URL : <span id="shortenedUrl"></span></p>
+
+            <h1>Decode Shortened URL</h1>
+            <label for="shortUrl">Enter a Shortened URL</label> <br>
+            <input type="text" id="shortUrl"> <br>
+            <button onclick="redirectToOriginalURL()">Get Original URL</button>
+            <p id="originalUrl">Original URL</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const urlDatabase = {};
+
+    function generateRandomString(length) {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let randomString = '';
+        for (let i = 0; i < length; i++) {
+            randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return randomString;
+    }
+
+    function shortenURL() {
+        const longUrlInput = document.getElementById('longUrl');
+        const longURL = longUrlInput.value.trim();
+        if (!isValidURL(longURL)) {
+            alert("Please enter a valid URL.");
+            return;
+        }
+        let shortURL;
+        do {
+            shortURL = generateRandomString(6); // Generating a 6-character random string
+        } while (urlDatabase[shortURL]); // Ensure the generated short URL is unique
+        urlDatabase[shortURL] = longURL;
+        const shortenedUrlOutput = document.getElementById('shortenedUrl');
+        shortenedUrlOutput.innerHTML = '<a href="' + longURL + '">' + window.location.href + '#' + shortURL + '</a>';
+    }
+
+    function redirectToOriginalURL() {
+    const shortUrlInput = document.getElementById('shortUrl');
+    const shortURL = shortUrlInput.value.trim();
+    if (!shortURL) {
+        alert("Please enter a shortened URL.");
+        return;
+    }
+    const longURL = urlDatabase[shortURL];
+    if (longURL) {
+        const originalUrlOutput = document.getElementById('originalUrl');
+        originalUrlOutput.textContent = longURL;
+        shortUrlInput.value = longURL; // Update the input field with the original URL
+    } else {
+        alert("Shortened URL not found.");
+    }
+}
+    function isValidURL(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+</script>
+
+</body>
+</html>
